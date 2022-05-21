@@ -7,7 +7,6 @@
  *
  * Return: a numerical value of 1
  */
-
 int print_c(va_list c)
 /* where c represent the specifier for a character */
 {
