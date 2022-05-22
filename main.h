@@ -5,13 +5,12 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
-
 /**
  * struct printout - defines the structure for function to be used where
  * @m: signifies the printout type
  * @n: represent the function printout
  */
-typedef struct printout_s /* starting point of our printout */
+typedef struct printout
 {
 	char *m;
 	int (*n)(va_list);
