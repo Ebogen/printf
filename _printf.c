@@ -1,82 +1,83 @@
-#include <stdio.h>
+#include "main.h"
 #include <stdarg.h>
-#include <unistd.h>
-#include "holberton.h"
 
 /**
- * find_correct_func - finding the format for _printf
- * @format: format
- * Return: NULL
+ * conv_specifier - searches for the correct conversion specifier
+ * @format: the right conversion specifier
+ *
+ * Return: the valid specifier or zero
  */
-
-int (*find_correct_func(const char *format))(va_list)
+static int (*conv_specifier(const char *format))(va_list)
 {
-unsigned int i = 0;
-code_f find_f[] = {
-{"c", print_char},
-{"s", print_string},
-{"i", print_int},
-{"d", print_dec},
-{"r", print_rev},
-{"b", print_bin},
-{"u", print_unsigned},
-{"o", print_octal},
-{"x", print_hex},
-{"X", print_HEX},
-{"R", print_rot13},
-{"S", print_S},
-{"p", print_p},
-{NULL, NULL}
-};
+	unsigned int i;
+	/* An array of the printout function shown below */
+	printout_t q[] = {
+		{"c", print_c},
+		{"s", print_s},
+		{"i", print_i},
+		{"d", print_d},
+		{"u", print_u},
+		{"b", print_b},
+		{"o", print_o},
+		{"x", print_x},
+		{"X", print_X},
+		{"p", print_p},
+		{"S", print_S},
+		{"r", print_r},
+		{"R", print_R},
+		{NULL, NULL}
+	};
 
-while (find_f[i].sc)
-{
-if (find_f[i].sc[0] == (*format))
-return (find_f[i].f);
-i++;
-}
-return (NULL);
+	for (i = 0; q[i].m != NULL; i++)
+	{
+		if (*(q[i].m) == *format)
+		{
+			break;
+		}
+	}
+	return (q[i].n);
 }
 
 /**
- * _printf - produces an output based on format
- * @format: format
- * Return: size
+ * _printf - a function that prints the character supplied
+ * @format: the argument type to the function
+ *
+ * Return: the character supplied
  */
 int _printf(const char *format, ...)
 {
-va_list list;
-int (*f)(va_list);
-unsigned int i = 0, len = 0;
-if (format == NULL)
-return (-1);
-va_start(list, format);
-while (format[i])
-{
-while (format[i] != '%' && format[i])
-{
-_putchar(format[i]);
-len++;
-i++;
-}
-if (format[i] == '\0')
-return (len);
-f = find_correct_func(&format[i + 1]);
-if (f != NULL)
-{
-len += f(list);
-i += 2;
-continue;
-}
-if (!format[i + 1])
-return (-1);
-_putchar(format[i]);
-len++;
-if (format[i + 1] == '%')
-i += 2;
-else
-i++;
-}
-va_end(list);
-return (len);
+	unsigned int i = 0, count = 0;
+	va_list valist;
+	int (*n)(va_list);
+
+	if (format == NULL)
+		return (-1);
+	va_start(valist, format);
+	while (format[i])
+	{
+		for (; format[i] != '%' && format[i]; i++)
+		{
+			_putchar(format[i]);
+			count++;
+		}
+		if (!format[i])
+			return (count);
+		n = conv_specifier(&format[i + 1]);
+		if (n != NULL)
+		{
+			count += n(valist);
+			i += 2;
+			continue;
+		}
+		if (!format[i + 1])
+			return (-1);
+		_putchar(format[i]);
+		count++;
+		if (format[i + 1] == '%')
+			i += 2;
+		else
+			i++;
+	}
+	va_end(valist);
+	return (count);
 }
